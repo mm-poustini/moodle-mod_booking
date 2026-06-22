@@ -436,6 +436,18 @@ class bookingoptions_wbtable extends wunderbyte_table {
             $title = $titleprefix . ' - ' . $title;
         }
 
+        // Do not create a link to the option view page for users who do not have
+        // the mod/booking:view capability (this includes guest users). This is
+        // the same condition used in viewoption.php.
+        $modcontext = context_module::instance($cmid);
+        if (
+            !get_config('booking', 'bookonlyondetailspage')
+            &&
+            !has_capability('mod/booking:view', $modcontext)
+        ) {
+            return $title;
+        }
+
         $title = match ((int) get_config('booking', 'openbookingdetailinsametab')) {
             // 1 is with link in same window.
             1 => "<div class='bookingoptions-wbtable-option-title'><a href='$url'>$title</a></div>",
